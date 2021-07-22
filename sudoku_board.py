@@ -2,7 +2,7 @@ import numpy as np
 
 class sudokuBoard():
 
-    def __init__(self, clues = list):
+    def __init__(self, clues = None):
 
         # We represent the board as a 9x9 numpy array of zeros
         self.board = np.zeros((9,9), dtype=int)
@@ -10,8 +10,9 @@ class sudokuBoard():
 
         # We update the board with the given clues that are given as tuples
         # of size 3, for the row, column, and value.
-        for clue in self.clues:
-            self.board[clue[0],clue[1]] = clue[2]
+        if clues is not None:
+            for clue in self.clues:
+                self.board[clue[0],clue[1]] = clue[2]
     
     # Rudimentary visualization of sudoku board
     def show_board(self):

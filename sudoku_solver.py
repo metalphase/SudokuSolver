@@ -131,13 +131,59 @@ class sudokuSolver():
 
     def new_solution(self):
         '''
-        
+        selects a random grid within the puzzle and randomly interchanges
+        2 of the slots within the grid
         '''
 
+        # We generate a new solution with a copy of the original board
+        new_sudoku_board = sudokuBoard()
+        new_sudoku_board.board = self.sudoku_board.board
+
+        # We generate a random row and col and feed those into local_grid
+        # in order to get a random grid from the board
+        row = np.random.choice(range(9))
+        col = np.random.choice(range(9))
+
+        # We get the row and column values for the local grid at (row,col)
+        row_values = 0
+        column_values = 0
+         
+        if 0 <= row <= 2:
+            row_values = [0, 1, 2]
+        elif 3 <= row <= 5:
+            row_values = [3, 4, 5]
+        else:
+            row_values = [6, 7, 8]
+
+        if 0 <= col <= 2:
+            column_values = [0, 1, 2]
+        elif 3 <= col <= 5:
+            column_values = [3, 4, 5]
+        else:
+            column_values = [6, 7, 8]
+
+        # We must now pick two random slots to interchange
+        i_1 = np.random.choice(row_values)
+        j_1 = np.random.choice(column_values)
+
+        i_2 = np.random.choice(row_values)
+        j_2 = np.random.choice(column_values)
+
+        print('(', i_1, ',', j_1, ')', 'interchanged with', '(', i_2, ',', j_2, ')')
+
+        # Now we interchange the slots within the puzzle. First storing the
+        # value of the first slot into a temporary variable
+        tmp = new_sudoku_board.board[i_1, j_1]
+        
+        # Then exchange...
+        new_sudoku_board.board[i_1, j_1] = new_sudoku_board.board[i_2, j_2] 
+        new_sudoku_board.board[i_2, j_2] = tmp
+
+        # We return the new board (?)
+        return new_sudoku_board
 
 
-
-
+        
 if __name__ == '__main__':
 
     # Testing sudokuBoard setup
@@ -160,6 +206,11 @@ if __name__ == '__main__':
     print(solver.score_puzzle())
     print("\n")
     
+    # Testing show_board
     print("__________show board__________")
     s.show_board()
     
+    # Testing new_solution
+    print("__________new solution__________")
+    new_s = solver.new_solution()
+    new_s.show_board()
