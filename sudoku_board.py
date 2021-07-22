@@ -69,30 +69,6 @@ class sudokuBoard():
                         self.board[row_values[0],column_values[2]]])
         
         return grid
-
-    # Returns True or False if a hypothetical insert of value into
-    # (row,column) is valid or not
-    def valid_insert(self, row, column, value):
-        '''
-        Returns True or False if a hypothetical insert of value into
-        (row,column) is valid or not
-        '''
-
-        grid = self.local_grid(row, column)
-
-        # We create a numpy array for the column extending from (row,column)
-        column = np.array([self.board[0,column], self.board[1,column], \
-                self.board[2,column], self.board[3,column], \
-                self.board[4,column], self.board[5,column], \
-                self.board[6,column], self.board[7,column], \
-                self.board[8,column]])
-
-        if value not in self.board[row] and value not in column \
-            and value not in grid:
-            return True
-        else:
-            return False
-
     
     def available_inserts(self):
         '''
@@ -118,18 +94,6 @@ if __name__ == '__main__':
     print(s.local_grid(2,4))
     print("\n")
     
-    # Testing valid_insert function
-    print("Testing valid insertions")
-    print("_____________________________________________________________________")
-    print("5 at (0,2): ", s.valid_insert(0, 2, 5))
-    print("5 at (1,0): ", s.valid_insert(1, 0, 5))
-    print("5 at (1,1): ", s.valid_insert(1, 1, 5))
-    print("4 at (0,2): ", s.valid_insert(0, 2, 4))
-    print("3 at (0,2): ", s.valid_insert(0, 2, 3))
-    print("5 at (8,0): ", s.valid_insert(8, 0, 5))
-    print("2 at (8,2): ", s.valid_insert(8, 2, 2))
-    print("7 at (0,5): ", s.valid_insert(0, 5, 7))
-    print("\n")
 
     # Testing available inserts
     print("Available locations for new inserts")
