@@ -7,7 +7,6 @@ class sudokuSolver():
 
         self.sudoku_board = sudokuBoard
 
-
     def insertions_left(self):
         '''
         Returns a dictionary of sudoku values and the number of each that 
@@ -132,7 +131,10 @@ class sudokuSolver():
     def new_solution(self):
         '''
         selects a random grid within the puzzle and randomly interchanges
-        2 of the slots within the grid
+        2 of the slots within the grid. Then returns the new puzzle board
+
+        Again, method of generating new solutions is courtesy of: 
+        https://github.com/erichowens/SudokuSolver
         '''
 
         # We generate a new solution with a copy of the original board
@@ -179,11 +181,73 @@ class sudokuSolver():
         new_sudoku_board.board[i_1, j_1] = new_sudoku_board.board[i_2, j_2] 
         new_sudoku_board.board[i_2, j_2] = tmp
 
-        # We return the new board (?)
-        return new_sudoku_board
+        # We now store the new board into sudoku_board attribute
+        self.sudoku_board = new_sudoku_board
 
 
+    def solve_puzzle(self):
+        '''
+        This is the main function that aims to solve the sudoku puzzle.
+        '''
+
+        # We store the score for the current sudoku board
+        current_score = self.score_puzzle()
+
+        # We also want to keep a copy of the best solution so far
+        best_score_solver = sudokuSolver(self.sudoku_board)
+        best_score = current_score
+
+        # We define a "temperature" for our system that will allows us to 
+        # find the solution via simulated annealing. We set our initial 
+        # temperature to .5
+        T = 0.5
+
+        # We also keep count of the current loop so that we may have an exit
+        # condition for our while loop in case our random process of finding
+        # the solution does not terminate
+        i = 0
         
+        # Set an upper bound of 50k cycles
+        end_loop = False
+        while not end_loop:
+            
+            # We set a hard limit on the amount of loops, since it is still
+            # possible to run indefinitely, since this is a random process
+            if i >= 50000:
+                end_loop = True
+
+            print("current_score: ", current_score, " best_score: ", best_score)
+
+            # Create a new solver which we will use to generate a new board
+            # and calculate the new current_score
+            new_solver = sudokuSolver(self.sudoku_board)
+            new_solver.new_solution()
+            
+            new_solver.sudoku_board.show_board()
+
+            # Calculate the new score
+            new_score = new_solver.score_puzzle()
+
+            # Calculate the change between the current_score and the
+            # new_score
+            score_diff = float(current_score - new_score)
+            
+            # We decide if we keep the result, or reject it. We keep if
+            # the probability of such a score difference is larger than
+            # a random value [0,1)
+            if ((np.exp(score_diff/T) - np.random.random()) > 0)
+                
+                # We replace our current board with the new one and
+                # we also set the current_score to be the new one
+                self.sudoku_board = np.copy(new_solver.sudoku_board)
+                current_score = new_score
+
+
+            # We reduce our temperature by 99%
+            T = 0.99999*T
+            i += 1
+
+
 if __name__ == '__main__':
 
     # Testing sudokuBoard setup
@@ -210,7 +274,8 @@ if __name__ == '__main__':
     print("__________show board__________")
     s.show_board()
     
+
     # Testing new_solution
     print("__________new solution__________")
-    new_s = solver.new_solution()
-    new_s.show_board()
+    solver.new_solution()
+    solver.sudoku_board.show_board()
