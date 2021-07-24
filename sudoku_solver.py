@@ -161,20 +161,32 @@ class sudokuSolver():
             column_values = [3, 4, 5]
         else:
             column_values = [6, 7, 8]
+        
+        valid_change = False
+        while not valid_change:
 
-        # We must now pick two random slots to interchange
-        i_1 = np.random.choice(row_values)
-        j_1 = np.random.choice(column_values)
+            # We must now pick two random slots to interchange
+            i_1 = np.random.choice(row_values)
+            j_1 = np.random.choice(column_values)
 
-        i_2 = np.random.choice(row_values)
-        j_2 = np.random.choice(column_values)
+            i_2 = np.random.choice(row_values)
+            j_2 = np.random.choice(column_values)
 
+            entry1 = (i_1,j_1, new_sudoku_board.board[i_1,j_1]) 
+            entry2 = (i_2,j_2, new_sudoku_board.board[i_2,j_2]) 
+            
+            if entry1 not in self.sudoku_board.clues and \
+                entry2 not in self.sudoku_board.clues:
+
+                valid_change = True
+
+            
         print('(', i_1, ',', j_1, ')', 'interchanged with', '(', i_2, ',', j_2, ')')
 
         # Now we interchange the slots within the puzzle. First storing the
         # value of the first slot into a temporary variable
         tmp = new_sudoku_board.board[i_1, j_1]
-        
+            
         # Then exchange...
         new_sudoku_board.board[i_1, j_1] = new_sudoku_board.board[i_2, j_2] 
         new_sudoku_board.board[i_2, j_2] = tmp
@@ -261,7 +273,7 @@ class sudokuSolver():
             T = 0.99999*T
             i += 1
 
-            best_score_solver.sudoku_board.show_board()
+        best_score_solver.sudoku_board.show_board()
 
 if __name__ == '__main__':
 
@@ -302,6 +314,8 @@ if __name__ == '__main__':
     solver.new_solution()
     solver.sudoku_board.show_board()
 
+    
     # Testing solve_puzzle
     print("__________solve puzzle__________")
     solver.solve_puzzle()
+    
