@@ -73,7 +73,6 @@ class sudokuSolver():
         # Set our score to 0
         score = 0 
         
-        print("row-by-row scoring")
         
         # First we score row-by-row
         for i in range(9):
@@ -101,9 +100,8 @@ class sudokuSolver():
             for item in values.items():
                 score += (-1) * (item[1])
 
-            print(values.items(), "    ", "score = ", score)
+            #print(values.items(), "    ", "score = ", score)
 
-        print("column-by-column scoring")
         
         # Now we score by column
         for i in range(9):
@@ -123,7 +121,7 @@ class sudokuSolver():
             for item in values.items():
                 score += (-1) * (item[1])
 
-            print(values.items(), "    ", "score = ", score)
+            #print(values.items(), "    ", "score = ", score)
 
         return score
 
@@ -213,45 +211,69 @@ class sudokuSolver():
             
             # We set a hard limit on the amount of loops, since it is still
             # possible to run indefinitely, since this is a random process
-            if i >= 50000:
+            if i >= 400000:
                 end_loop = True
 
-            print("current_score: ", current_score, " best_score: ", best_score)
 
             # Create a new solver which we will use to generate a new board
             # and calculate the new current_score
-            new_solver = sudokuSolver(self.sudoku_board)
+            new_sudoku_board = self.sudoku_board
+            new_solver = sudokuSolver(new_sudoku_board)
             new_solver.new_solution()
-            
-            new_solver.sudoku_board.show_board()
 
             # Calculate the new score
             new_score = new_solver.score_puzzle()
 
+            
             # Calculate the change between the current_score and the
             # new_score
             score_diff = float(current_score - new_score)
+            print("current_score: ", current_score, " best_score: ", best_score, "new_score: ", new_score, "score_diff: ", score_diff)
             
             # We decide if we keep the result, or reject it. We keep if
             # the probability of such a score difference is larger than
             # a random value [0,1)
-            if ((np.exp(score_diff/T) - np.random.random()) > 0)
+            if ((np.exp(score_diff/T) - np.random.random()) > 0):
                 
                 # We replace our current board with the new one and
                 # we also set the current_score to be the new one
-                self.sudoku_board = np.copy(new_solver.sudoku_board)
+                self.sudoku_board = new_solver.sudoku_board
                 current_score = new_score
+            
 
+            # If we get a better score than the best score, we set our 
+            # best_score and our best_score_solver to the new_solver.
+            if (new_score < best_score):
+                best_score_solver.sudoku_board = self.sudoku_board
+                best_score = current_score
+            
+            
+
+            # We get the outright answer in our new_solver, then we can
+            # set it to our best_score_solver and we exit the loop
+            if new_score == -162:
+                best_score_solver.sudoku_board = new_solver.sudoku_board
+                best_score = new_score
+
+                end_loop = True
 
             # We reduce our temperature by 99%
             T = 0.99999*T
             i += 1
 
+            best_score_solver.sudoku_board.show_board()
 
 if __name__ == '__main__':
 
     # Testing sudokuBoard setup
-    s = sudokuBoard(clues= [(0,0,5), (1,2,9), (4,5,8), (0,1,4), (0,3,1), (2,4,7)])
+    s = sudokuBoard(clues= [(0,0,9), (0,1,1), (0,2,6), (0,3,3), (0,4,4), \
+                            (0,6,7), (0,7,8), (1,2,2), (1,6,5), (1,7,6), \
+                            (2,0,5), (2,1,3), (2,3,8), (2,4,2), (2,5,6), \
+                            (2,6,4), (2,7,1), (3,4,7), (3,8,6), (4,1,9), \
+                            (4,2,4), (4,3,2), (4,5,3), (5,0,2), (5,1,7), \
+                            (5,7,4), (6,0,1), (6,3,6), (6,5,7), (6,8,4), \
+                            (7,2,9), (7,7,3), (8,3,5), (8,4,3), (8,7,2), \
+                            (8,8,1)])
     s.show_board()
 
 
@@ -279,3 +301,7 @@ if __name__ == '__main__':
     print("__________new solution__________")
     solver.new_solution()
     solver.sudoku_board.show_board()
+
+    # Testing solve_puzzle
+    print("__________solve puzzle__________")
+    solver.solve_puzzle()
