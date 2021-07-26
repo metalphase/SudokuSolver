@@ -181,7 +181,7 @@ class sudokuSolver():
                 valid_change = True
 
             
-        print('(', i_1, ',', j_1, ')', 'interchanged with', '(', i_2, ',', j_2, ')')
+        #print('(', i_1, ',', j_1, ')', 'interchanged with', '(', i_2, ',', j_2, ')')
 
         # Now we interchange the slots within the puzzle. First storing the
         # value of the first slot into a temporary variable
@@ -192,7 +192,7 @@ class sudokuSolver():
         new_sudoku_board.board[i_2, j_2] = tmp
 
         # We now store the new board into sudoku_board attribute
-        self.sudoku_board = new_sudoku_board
+        self.sudoku_board.board = new_sudoku_board.board
 
 
     def solve_puzzle(self):
@@ -210,7 +210,7 @@ class sudokuSolver():
         # We define a "temperature" for our system that will allows us to 
         # find the solution via simulated annealing. We set our initial 
         # temperature to .5
-        T = 0.5
+        T = 100
 
         # We also keep count of the current loop so that we may have an exit
         # condition for our while loop in case our random process of finding
@@ -223,24 +223,28 @@ class sudokuSolver():
             
             # We set a hard limit on the amount of loops, since it is still
             # possible to run indefinitely, since this is a random process
-            if i >= 400000:
+            if i >= 1000000:
                 end_loop = True
 
 
             # Create a new solver which we will use to generate a new board
             # and calculate the new current_score
-            new_sudoku_board = self.sudoku_board
+            new_sudoku_board = sudokuBoard()
+            new_sudoku_board.board = self.sudoku_board.board
+            new_sudoku_board.clues = self.sudoku_board.clues
+            
+            # We create a new solver which has a copy of the current 
+            # board. We call new_solution() to generate a random permutation
             new_solver = sudokuSolver(new_sudoku_board)
             new_solver.new_solution()
 
             # Calculate the new score
             new_score = new_solver.score_puzzle()
-
             
             # Calculate the change between the current_score and the
             # new_score
             score_diff = float(current_score - new_score)
-            print("current_score: ", current_score, " best_score: ", best_score, "new_score: ", new_score, "score_diff: ", score_diff)
+            print("i: ", i , "current_score: ", current_score, " best_score: ", best_score, "new_score: ", new_score, "score_diff: ", score_diff)
             
             # We decide if we keep the result, or reject it. We keep if
             # the probability of such a score difference is larger than
@@ -255,7 +259,7 @@ class sudokuSolver():
 
             # If we get a better score than the best score, we set our 
             # best_score and our best_score_solver to the new_solver.
-            if (new_score < best_score):
+            if (current_score < best_score):
                 best_score_solver.sudoku_board = self.sudoku_board
                 best_score = current_score
             
@@ -287,13 +291,14 @@ if __name__ == '__main__':
                             (7,2,9), (7,7,3), (8,3,5), (8,4,3), (8,7,2), \
                             (8,8,1)])
     s.show_board()
+    solver = sudokuSolver(s)
 
 
     # Testing sudokuSolver insertions_left function
     print("__________insertions left__________")
-    solver = sudokuSolver(s)
     print(solver.insertions_left())
     print("\n")
+    
     # Generating a solution
     print("__________generating solution__________")
     solver.generate_solution()
@@ -306,15 +311,14 @@ if __name__ == '__main__':
     
     # Testing show_board
     print("__________show board__________")
+    print(solver.sudoku_board.clues)
     s.show_board()
-    
 
     # Testing new_solution
     print("__________new solution__________")
     solver.new_solution()
     solver.sudoku_board.show_board()
 
-    
     # Testing solve_puzzle
     print("__________solve puzzle__________")
     solver.solve_puzzle()
